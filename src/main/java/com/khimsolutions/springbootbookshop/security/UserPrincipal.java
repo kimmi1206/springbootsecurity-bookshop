@@ -1,6 +1,8 @@
 package com.khimsolutions.springbootbookshop.security;
 
+import com.khimsolutions.springbootbookshop.model.Role;
 import com.khimsolutions.springbootbookshop.model.User;
+import com.khimsolutions.springbootbookshop.util.SecurityUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +10,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor
@@ -21,6 +24,17 @@ public class UserPrincipal implements UserDetails {
     transient private String password;  /* doesn't show up on serialized classes */
     transient private User user;    /* only for login process, DO NOT use in JWT */
     private Set<GrantedAuthority> authorities;
+
+    public static UserPrincipal createSuperUser() {
+
+        Set<GrantedAuthority> authorities = Set.of(SecurityUtils.convertToAuthority((Role.SYSTEM_MANAGER.name())));
+
+        return UserPrincipal.builder()
+                .id(-1L)
+                .username("system-administrator")
+                .authorities(authorities)
+                .build();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
